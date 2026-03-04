@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, useGLTF, Environment, Center } from "@react-three/drei";
+import { OrbitControls, useGLTF, Center } from "@react-three/drei";
 
 function Model() {
   const { scene } = useGLTF("/your-food.glb");
@@ -27,19 +27,16 @@ export default function ModelViewer() {
         gl={{ antialias: true }}
         shadows
       >
-        <ambientLight intensity={0.6} />
-        <directionalLight
-          position={[5, 10, 5]}
-          intensity={1.5}
-          castShadow
-        />
-        <pointLight position={[-5, 5, -5]} intensity={0.5} color="#ffffff" />
+        {/* No external HDR preset — avoids CDN fetch failures on mobile */}
+        <ambientLight intensity={1.2} />
+        <directionalLight position={[5, 10, 5]} intensity={2} castShadow />
+        <directionalLight position={[-5, 3, -5]} intensity={0.8} color="#c8d8ff" />
+        <pointLight position={[0, 6, 0]} intensity={1} color="#ffffff" />
 
         <Suspense fallback={<LoadingFallback />}>
           <Center>
             <Model />
           </Center>
-          <Environment preset="city" />
         </Suspense>
 
         <OrbitControls
