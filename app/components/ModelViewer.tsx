@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
+import Link from "next/link";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Environment, Center } from "@react-three/drei";
 
@@ -50,6 +51,29 @@ export default function ModelViewer() {
           maxPolarAngle={Math.PI / 1.8}
         />
       </Canvas>
+
+      {/* View in AR button — top-right corner */}
+      <Link
+        href="/ar"
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "20px",
+          padding: "10px 20px",
+          background: "rgba(255,255,255,0.12)",
+          color: "#fff",
+          fontFamily: "sans-serif",
+          fontSize: "14px",
+          fontWeight: 500,
+          textDecoration: "none",
+          borderRadius: "24px",
+          border: "1px solid rgba(255,255,255,0.25)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+        }}
+      >
+        View in AR
+      </Link>
 
       <div
         style={{

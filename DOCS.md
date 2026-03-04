@@ -11,15 +11,20 @@ A Next.js web app that renders an interactive 3D food model (`.glb` file) in the
 ```
 new-3d-proj/
 ├── app/
+│   ├── ar/
+│   │   └── page.tsx          # AR route — SSR-disabled, loads ARViewer
 │   ├── components/
-│   │   └── ModelViewer.tsx   # 3D canvas component (client-side)
+│   │   ├── ModelViewer.tsx   # Main 3D viewer (client-side, has "View in AR" button)
+│   │   ├── ARViewer.tsx      # Platform router: iOS → Quick Look, Android → WebXR
+│   │   └── ARScene.tsx       # Android WebXR AR scene (hit-test + tap-to-place)
 │   ├── globals.css           # Global styles (zeroed margin/padding)
 │   ├── layout.tsx            # Root layout with metadata
 │   └── page.tsx              # Home page — renders ModelViewer
 ├── public/
 │   └── your-food.glb         # 3D model file (served as static asset)
-├── package.json
-└── DOCS.md
+├── AR.md                     # Full AR implementation documentation
+├── DOCS.md
+└── package.json
 ```
 
 ---
@@ -97,3 +102,27 @@ Then open **http://localhost:3000** in your browser.
 2. `useGLTF("/your-food.glb")` (from `@react-three/drei`) fetches and parses the file using Three.js's `GLTFLoader`
 3. The parsed `scene` object (a Three.js `Object3D` graph) is passed to `<primitive object={scene} />` which inserts it directly into the R3F scene graph
 4. React Suspense handles the async loading — the fallback wireframe sphere is shown until the model is ready
+
+---
+
+## AR Feature
+
+Added in second iteration. The main viewer has a **"View in AR"** button (top-right) that navigates to `/ar`.
+
+### Platform behaviour
+
+| Device | What happens |
+|---|---|
+| Android (ARCore) + Chrome | Full in-browser WebXR AR — white reticle on detected surface, tap to place model |
+| iPhone / iPad + Safari | `<model-viewer>` launches Apple AR Quick Look (native ARKit, system viewer) |
+| Desktop / unsupported | Graceful error message |
+
+### New dependencies
+
+```bash
+npm install @react-three/xr @google/model-viewer --legacy-peer-deps
+```
+
+(`--legacy-peer-deps` needed because `@google/model-viewer` declares a stale `three` peer dep even though it bundles its own Three.js)
+
+See **`AR.md`** for full implementation details, how to tune model scale, and how to swap the GLB file.
